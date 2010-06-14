@@ -78,7 +78,7 @@ public:
 
     if( interface.isSet() ) {
       char command[ 1024 ];
-      sprintf( command, "mii-tool -w %s", interface.getInterface() );
+      sprintf( command, "exec mii-tool -w %s", interface.getInterface() );
       mii_tool    = popen( command, "r" );
 
       // http://stackoverflow.com/questions/149860/how-to-prevent-fgets-blocks-when-file-stream-has-no-new-data

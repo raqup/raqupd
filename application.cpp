@@ -187,7 +187,8 @@ public:
         switch( request( "REBOOT:", "[Y]ES", "[N]O", 1 ) ) {
         case 0:
           system( "reboot" );
-          while( true ) cobalt.sleep( 1 );
+          cobalt.reBoot();
+          return 0;
         case 1:
           next = INFO;
         } break;
@@ -199,7 +200,8 @@ public:
         switch( request( "POWER DOWN:", "[Y]ES", "[N]O", 1 ) ) {
         case 0:
           system( "shutdown -P now" );
-          while( true ) cobalt.sleep( 1 );
+          cobalt.shutDown();
+          return 0;
         case 1:
           next = INFO;
           break;
@@ -301,7 +303,12 @@ public:
 
           oline1[ 80 ],
           oline2[ 80 ];
-
+          
+    line1[ 0 ]  = 0;
+    line2[ 0 ]  = 0;
+    oline1[ 0 ] = 0;
+    oline2[ 0 ] = 0;
+    
     while( true ) {
       sprintf( line2, "%s", ( interface.isSet() ? interface.getAddress() : interface.getIP( interface.getInterface() ) ) );
       sprintf( line1, "%s.%s", interface.getHostName(), interface.getDomainName() );
@@ -329,10 +336,9 @@ public:
          duser, dnice, dsystem, didle, diowait, dirq, dsoftirq,
          all;
 
-    char bar[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF },
-     line2[ 50 ],
-     load,
-     width = 0;
+    char line2[ 50 ],
+         load,
+         width = 0;
 
     cobalt.screen( "CPU UTILISATION:", "|          |" );
 
@@ -387,7 +393,9 @@ public:
           if( width == 0 && load > 0 )  width = 1;
           if( width > 10 )              width = 10;
 
-          sprintf( line2, "|%-10s|%3d%%", bar + 10 - width, load );
+          sprintf( line2, "|          |%3d%%", load );
+          for( int i = 0; i < width; i++ ) line2[ 1 + i ] = 0xFF;
+          
           cobalt.locate( 0, 1 ).print( line2 );
 
           for( int i = 0; i < 1 * 1000 / delay; i++ ) { // alle 1 Sekunden

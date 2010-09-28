@@ -112,7 +112,7 @@ public:
   void write( const char *buffer, const int length = -1 ) {
     int l = length;
     if( l < 0 ) l = strlen( buffer );
-    printf( "SEND TO DISPLAY: >%s< (%d)\r\n", buffer, l );
+//printf( "SEND TO DISPLAY: >%s< (%d)\r\n", buffer, l );
     ::write( fd, buffer, l );
   }
 };

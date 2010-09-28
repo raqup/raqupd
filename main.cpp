@@ -23,7 +23,7 @@
 
 int main( int argc, char **argv ) {
   bool  becomeDaemon = false;
-  char  device[]  = "/dev/ttyUSB0",
+  char  device[]  = "/dev/ttyS0",
         line1[]   = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 
         line2[]   = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     

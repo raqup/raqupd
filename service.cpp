@@ -39,10 +39,17 @@ public:
 	void load() {
 		FILE *fp = popen( "service --status-all 2> /dev/null", "r" );
 		if( fp == NULL ) return;
-		char line[ 1024 ];
-		for( _serviceCounter = 0; NULL != fgets( line, sizeof( line ), fp ); _serviceCounter++ ) 
-			sscanf( line, " [ %c ]	%s", &(_services[ _serviceCounter ].state), _services[ _serviceCounter ].name );
+		char line[ 1024 ], state, name[ 1024 ];
+		for( _serviceCounter = 0; NULL != fgets( line, sizeof( line ), fp ); ) {
+			sscanf( line, " [ %c ]	%s", &state, name );
+			if( strcmp( name, "raqup" ) == 0 ) continue;
+			
+			_services[ _serviceCounter ].state = state;
+			strncpy( _services[ _serviceCounter ].name, name, sizeof( _services[ _serviceCounter ].name ) );
+			//sscanf( line, " [ %c ]	%s", &(_services[ _serviceCounter ].state), _services[ _serviceCounter ].name );
 		
+			_serviceCounter++;
+		}
 		pclose( fp );
 	}
 	
@@ -58,16 +65,28 @@ public:
 	
 	bool start( const unsigned int service ) {
 		if( service > _serviceCounter ) return false;
+		
 		char command[ 1024 ];
+		
+		sprintf( command, "update-rc.d %s defaults 1> /dev/null 2> /dev/null", getServiceName( service ) );
+		system( command );
+		
 		sprintf( command, "service %s start 1> /dev/null 2> /dev/null", getServiceName( service ) );
 		int result = system( command );
+		
 		return result > 0 && result < 127;
 	} 
 	bool stop( const unsigned int service ) {
 		if( service > _serviceCounter ) return false;
+		
 		char command[ 1024 ];
+
 		sprintf( command, "service %s stop 1> /dev/null 2> /dev/null", getServiceName( service ) );
 		int result = system( command );
+		
+		sprintf( command, "update-rc.d -f %s remove 1> /dev/null 2> /dev/null", getServiceName( service ) );
+		system( command );
+		
 		return result > 0 && result < 127;
 	}
 };

@@ -41,7 +41,7 @@ public:
     
     char  buffer = UART::getc( blocking );
     
-    if( buffer == '~' ) { // PING
+    if( buffer == '.' ) { // PING
       write( &buffer, 1 );
       buffer = 0;
     }
@@ -71,50 +71,59 @@ public:
     write( "-" );
     return *this;
   }
-  Cobalt& reset() {
-    write ( "r" );
+  
+  Cobalt& shutDown() {
+    write( "#" );
+    setTxRx( false );
+    setCollision( false );
+    setLink( false );
+    set100MBit( false );
     return *this;
   }
-  Cobalt& cyclePower() {
-    write( "p" );
+  Cobalt& reBoot() {
+    write( "~" );
+    setTxRx( false );
+    setCollision( false );
+    setLink( false );
+    set100MBit( false );
     return *this;
   }
   
   Cobalt& setLink( const bool value ) {
-    if( value ) write( "l1" );
-    else        write( "l0" );
+    if( value ) write( "L" );
+    else        write( "l" );
     return *this;
   }
   Cobalt& setCollision( const bool value ) {
-    if( value ) write( "c1" );
-    else        write( "c0" );
+    if( value ) write( "C" );
+    else        write( "c" );
     return *this;
   }
   Cobalt& set100MBit( const bool value ) {
-    if( value ) write( "11" );
-    else        write( "10" );
+    if( value ) write( "!" );
+    else        write( "1" );
     return *this;
   }
   Cobalt& setTemp( const bool value ) {
-    if( value ) write( "t1" );
-    else        write( "t0" );
+    if( value ) write( "T" );
+    else        write( "t" );
     return *this;
   }
   Cobalt& setWeb( const bool value ) { return setTemp( value ); }  
   
   Cobalt& setTxRx( const bool value ) {
-    if( value ) write( "x1" );
-    else        write( "x0" );
+    if( value ) write( "X" );
+    else        write( "x" );
     return *this;
   }
   Cobalt& showCursor( const bool value ) {
-    if( value ) write( "s1" );
-    else        write( "s0" );
+    if( value ) write( "S" );
+    else        write( "s" );
     return *this;
   }
   Cobalt& enableDisplay( const bool value ) {
-    if( value ) write( "e1" );
-    else        write( "e0" );
+    if( value ) write( "E" );
+    else        write( "e" );
     return *this;
   }
   Cobalt& locate( const unsigned char x, const unsigned char y ) {

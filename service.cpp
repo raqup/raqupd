@@ -19,74 +19,68 @@
 //
 // -----------------------------------------------------------------------TAB=2
 
-#include <string.h> 
-#include <stdio.h>
-#include <ctype.h>
-#include <unistd.h>
-#include <stdlib.h>
+#include "service.h"
 
-class Service {
-	struct SERVICE {
-		char	name[ 80 ],
-					state;
-	} _services[ 200 ];
-	unsigned int _serviceCounter;
-
-public:
-	Service() {
-		_serviceCounter = 0;
-	}
-	void load() {
-		FILE *fp = popen( "service --status-all 2> /dev/null", "r" );
-		if( fp == NULL ) return;
-		char line[ 1024 ], state, name[ 1024 ];
-		for( _serviceCounter = 0; NULL != fgets( line, sizeof( line ), fp ); ) {
-			sscanf( line, " [ %c ]	%s", &state, name );
-			if( strcmp( name, "raqup" ) == 0 ) continue;
-			
-			_services[ _serviceCounter ].state = state;
-			strncpy( _services[ _serviceCounter ].name, name, sizeof( _services[ _serviceCounter ].name ) );
-			//sscanf( line, " [ %c ]	%s", &(_services[ _serviceCounter ].state), _services[ _serviceCounter ].name );
-		
-			_serviceCounter++;
-		}
-		pclose( fp );
-	}
+Service::Service() {
+	_serviceCounter = 0;
+}
 	
-	const unsigned int length() const { return _serviceCounter; }
-	const char* getServiceName( const unsigned int service ) const {
-		if( service > _serviceCounter ) return NULL;
-		return _services[ service ].name;
-	}
-	const char getServiceState( const unsigned int service ) const {
-		if( service > _serviceCounter ) return 0;
-		return _services[ service ].state;
-	}
+void Service::load() {
+	FILE *fp = popen( "service --status-all 2> /dev/null", "r" );
+	if( fp == NULL ) return;
+	char line[ 1024 ], state, name[ 1024 ];
+	for( _serviceCounter = 0; NULL != fgets( line, sizeof( line ), fp ); ) {
+		sscanf( line, " [ %c ]	%s", &state, name );
+		if( strcmp( name, "raqup" ) == 0 ) continue;
+		
+		_services[ _serviceCounter ].state = state;
+		strncpy( _services[ _serviceCounter ].name, name, sizeof( _services[ _serviceCounter ].name ) );
+		//sscanf( line, " [ %c ]	%s", &(_services[ _serviceCounter ].state), _services[ _serviceCounter ].name );
 	
-	bool start( const unsigned int service ) {
-		if( service > _serviceCounter ) return false;
-		
-		char command[ 1024 ];
-		
-		sprintf( command, "update-rc.d %s defaults 1> /dev/null 2> /dev/null", getServiceName( service ) );
-		system( command );
-		
-		sprintf( command, "service %s start 1> /dev/null 2> /dev/null", getServiceName( service ) );
-		int result = system( command );
-		
-		return result > 0 && result < 127;
-	} 
-	bool stop( const unsigned int service ) {
-		if( service > _serviceCounter ) return false;
-		
-		char command[ 1024 ];
-
-		sprintf( command, "service %s stop 1> /dev/null 2> /dev/null", getServiceName( service ) );
-		int result = system( command );
-		
-		sprintf( command, "update-rc.d -f %s remove 1> /dev/null 2> /dev/null", getServiceName( service ) );
-		system( command );
-		
-		return result > 0 && result < 127;
+		_serviceCounter++;
 	}
-};
+	pclose( fp );
+}
+
+const unsigned int Service::length() const { 
+  return _serviceCounter; 
+}
+
+const char* Service::getServiceName( const unsigned int service ) const {
+	if( service > _serviceCounter ) return NULL;
+	return _services[ service ].name;
+}
+
+const char Service::getServiceState( const unsigned int service ) const {
+	if( service > _serviceCounter ) return 0;
+	return _services[ service ].state;
+}
+	
+bool Service::start( const unsigned int service ) {
+	if( service > _serviceCounter ) return false;
+	
+	char command[ 1024 ];
+	
+	sprintf( command, "update-rc.d %s defaults 1> /dev/null 2> /dev/null", getServiceName( service ) );
+	system( command );
+	
+	sprintf( command, "service %s start 1> /dev/null 2> /dev/null", getServiceName( service ) );
+	int result = system( command );
+	
+	return result > 0 && result < 127;
+} 
+
+bool Service::stop( const unsigned int service ) {
+	if( service > _serviceCounter ) return false;
+	
+	char command[ 1024 ];
+
+	sprintf( command, "service %s stop 1> /dev/null 2> /dev/null", getServiceName( service ) );
+	int result = system( command );
+	
+	sprintf( command, "update-rc.d -f %s remove 1> /dev/null 2> /dev/null", getServiceName( service ) );
+	system( command );
+	
+	return result > 0 && result < 127;
+}
+

@@ -1,19 +1,22 @@
 #Wno-unused-result -Os
 
-all:	main.cpp uart.cpp cobalt.cpp interface.cpp service.cpp application.cpp
-	g++ main.cpp -s -o raqupd
+all:	uart.o cobalt.o interface.o service.o application.o main.o
+	g++ *.o -s -o raqupd
 	
-uart.o:	uart.cpp
+uart.o:	uart.cpp uart.h
 	g++ uart.cpp -c -o uart.o
 	
-cobalt.o:	cobalt.cpp
+cobalt.o:	cobalt.cpp cobalt.h
 	g++ cobalt.cpp -c -o cobalt.o
 	
-interface.o:	interface.cpp
+interface.o:	interface.cpp interface.h
 	g++ interface.cpp -c -o interface.o
 	
-service.o:	service.cpp
+service.o:	service.cpp service.h
 	g++ service.cpp -c -o service.o
 
-application.o:	application.cpp
+application.o:	application.cpp application.h
 	g++ application.cpp -c -o application.o
+	
+main.o:	main.cpp 
+	g++ main.cpp -c -o main.o

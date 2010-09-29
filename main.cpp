@@ -19,7 +19,7 @@
 //
 // -----------------------------------------------------------------------TAB=2
 
-#include "application.cpp"
+#include "application.h"
 
 int main( int argc, char **argv ) {
   bool  becomeDaemon = false;
